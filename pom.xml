@@ -2,13 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>ALIBABA IDST NLS DIALOG TOOLKIT</name>
+    <description>this is the sdk of alibaba idst nls dialog sdk</description>
     <groupId>com.alibaba.idst</groupId>
     <artifactId>nls-dialog-toolkit</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>uds-toolkit</name>
-    <url>http://maven.apache.org</url>
+    <url>https://nls.console.aliyun.cog</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -108,6 +109,119 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <encoding>UTF8</encoding>
+                    <aggregate>true</aggregate>
+                    <charset>UTF8</charset>
+                    <docencoding>UTF8</docencoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/alibaba/nls-dialog-toolkit/tree/${project.scm.tag}</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>niesongyang</name>
+            <email>songyang.nsy@alibaba-inc.com</email>
+            <organization>Alibaba Group</organization>
+            <organizationUrl>https://www.alibaba.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>hanlu</name>
+            <email>lu.hl@alibaba-inc.com</email>
+            <organization>Alibaba Group</organization>
+            <organizationUrl>https://www.alibaba.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>lixingxing</name>
+            <email>yukong.lxx@alibaba-inc.com</email>
+            <organization>Alibaba Group</organization>
+            <organizationUrl>https://www.alibaba.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>zhouyuan</name>
+            <email>zhouy.zy@alibaba-inc.com</email>
+            <organization>Alibaba Group</organization>
+            <organizationUrl>https://www.alibaba.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>bianchuanmeng</name>
+            <email>chuanmeng.bcm@alibaba-inc.com</email>
+            <organization>Alibaba Group</organization>
+            <organizationUrl>https://www.alibaba.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>jianghaitao</name>
+            <email>shundao.jht@alibaba-inc.com</email>
+            <organization>Alibaba Group</organization>
+            <organizationUrl>https://www.alibaba.com</organizationUrl>
+        </developer>
+    </developers>
 </project>

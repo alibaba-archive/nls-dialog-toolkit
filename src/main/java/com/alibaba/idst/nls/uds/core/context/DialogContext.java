@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.idst.nls.uds.nlu.NluSlotProcessor;
 import com.alibaba.idst.nlu.request.v6.context.dialog.NluDialogContext;
-import com.alibaba.idst.nlu.response.common.Slot;
+import com.alibaba.idst.nlu.response.common.BaseSlot;
 import com.alibaba.idst.nlu.response.slot.BasicSlot;
 import com.alibaba.idst.nlu.response.slot.DateTimeSlot;
 import com.alibaba.idst.nlu.response.slot.GeoSlot;
@@ -132,13 +132,13 @@ public class DialogContext {
         return JSON.parseObject(data, NluResponse.class, processor);
     }
 
-    public void addSlots(String sessionId, String domain, Map<String, List<Slot>> slots) {
+    public void addSlots(String sessionId, String domain, Map<String, List<BaseSlot>> slots) {
         if(slots == null || slots.isEmpty()) {
             return;
         }
         String slotId = SLOT_PREFIX + sessionId;
 
-        Map<String, Map<String, List<Slot>>> slotMap = new HashMap<>();
+        Map<String, Map<String, List<BaseSlot>>> slotMap = new HashMap<>();
         String jsonData = dialogCache.readString(slotId);
         if (Strings.isNullOrEmpty(jsonData)) {
             slotMap.put(domain, slots);
@@ -150,7 +150,7 @@ public class DialogContext {
                 slotObjs = JSON.parseObject(JSON.toJSONString(slots));
                 root.put(domain, slotObjs);
             } else {
-                Map<String, List<Slot>> cachedSlots = getCachedSlot(slotObjs);
+                Map<String, List<BaseSlot>> cachedSlots = getCachedSlot(slotObjs);
                 cachedSlots.putAll(slots);
 
                 root.put(domain, JSON.parseObject(JSON.toJSONString(cachedSlots)));
@@ -173,14 +173,14 @@ public class DialogContext {
             return;
         }
 
-        Map<String, List<Slot>> cachedSlots = getCachedSlot(slots);
+        Map<String, List<BaseSlot>> cachedSlots = getCachedSlot(slots);
         cachedSlots.remove(slotName);
         root.put(domain, JSON.parseObject(JSON.toJSONString(cachedSlots)));
 
         dialogCache.saveString(slotId, JSON.toJSONString(root));
     }
 
-    public Map<String, List<Slot>> getSlots(String sessionId, String domain) {
+    public Map<String, List<BaseSlot>> getSlots(String sessionId, String domain) {
         String slotId = SLOT_PREFIX + sessionId;
         String jsonData = dialogCache.readString(slotId);
         if (Strings.isNullOrEmpty(jsonData)) {
@@ -196,10 +196,10 @@ public class DialogContext {
         return getCachedSlot(slots);
     }
 
-    public Map<String, List<Slot>> getSlots(String sessionId) {
+    public Map<String, List<BaseSlot>> getSlots(String sessionId) {
         String slotId = SLOT_PREFIX + sessionId;
 
-        Map<String, List<Slot>> slotMap = new HashMap<>();
+        Map<String, List<BaseSlot>> slotMap = new HashMap<>();
         String jsonData = dialogCache.readString(slotId);
         if (Strings.isNullOrEmpty(jsonData)) {
             return null;
@@ -213,7 +213,7 @@ public class DialogContext {
                 continue;
             }
 
-            Map<String, List<Slot>> cachedSlots = getCachedSlot(slots);
+            Map<String, List<BaseSlot>> cachedSlots = getCachedSlot(slots);
             if (cachedSlots == null || cachedSlots.isEmpty()) {
                 continue;
             }
@@ -235,13 +235,13 @@ public class DialogContext {
         dialogCache.removeCache(nluResultId);
     }
 
-    private Map<String, List<Slot>> getCachedSlot(JSONObject slotList) {
-        Map<String, List<Slot>> cachedSlots = new HashMap<>();
+    private Map<String, List<BaseSlot>> getCachedSlot(JSONObject slotList) {
+        Map<String, List<BaseSlot>> cachedSlots = new HashMap<>();
         for (Entry<String, Object> item : slotList.entrySet()) {
-            List<Slot> list = new ArrayList<>();
+            List<BaseSlot> list = new ArrayList<>();
             JSONArray arr = (JSONArray)item.getValue();
             for (int i = 0; i < arr.size(); i++) {
-                Slot slot = getSlot(arr.getJSONObject(i));
+                BaseSlot slot = getSlot(arr.getJSONObject(i));
                 list.add(slot);
             }
             cachedSlots.put(item.getKey(), list);
@@ -249,7 +249,7 @@ public class DialogContext {
         return cachedSlots;
     }
 
-    private Slot getSlot(JSONObject slot) {
+    private BaseSlot getSlot(JSONObject slot) {
         if (!slot.containsKey("level_1") && !slot.containsKey("level_2") && !slot.containsKey("level_3") && !slot
             .containsKey("level_4") && !slot.containsKey("level_5") && !slot.containsKey("location")) {
             if (slot.containsKey("norm") && slot.get("norm") instanceof JSONArray) {

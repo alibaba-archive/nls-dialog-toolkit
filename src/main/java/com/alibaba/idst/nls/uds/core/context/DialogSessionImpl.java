@@ -3,7 +3,7 @@ package com.alibaba.idst.nls.uds.core.context;
 import com.alibaba.idst.nls.uds.context.DialogSession;
 import com.alibaba.idst.nls.uds.request.DialogRequest;
 import com.alibaba.idst.nlu.request.v6.context.dialog.NluDialogContext;
-import com.alibaba.idst.nlu.response.common.Slot;
+import com.alibaba.idst.nlu.response.common.BaseSlot;
 import com.alibaba.idst.nlu.response.v6.NluResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -64,7 +64,7 @@ public class DialogSessionImpl implements DialogSession {
     }
 
     @Override
-    public Map<String, List<Slot>> getSlots(String domain) {
+    public Map<String, List<BaseSlot>> getSlots(String domain) {
         return dialogContext.getSlots(sessionId, domain);
     }
 
@@ -88,7 +88,7 @@ public class DialogSessionImpl implements DialogSession {
         dialogContext.removeNluContext(sessionId, domain, intent);
     }
     @Override
-    public Map<String, List<Slot>> getSlots() {
+    public Map<String, List<BaseSlot>> getSlots() {
         return dialogContext.getSlots(sessionId);
     }
 
