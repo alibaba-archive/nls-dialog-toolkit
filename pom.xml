@@ -6,7 +6,7 @@
     <description>this is the sdk of alibaba idst nls dialog sdk</description>
     <groupId>com.alibaba.idst</groupId>
     <artifactId>nls-dialog-toolkit</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1.RELEASE</version>
     <packaging>jar</packaging>
 
     <url>https://nls.console.aliyun.cog</url>
@@ -21,6 +21,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.8</jdk.version>
+        <aliyun.java.sdk.core.version>4.4.6</aliyun.java.sdk.core.version>
+        <sdm.dialog.sdk.version>1.0.1.RELEASE</sdm.dialog.sdk.version>
+        <httpcomponents.httpclient.version>4.5.5</httpcomponents.httpclient.version>
+        <ehcache.version>3.4.0</ehcache.version>
+        <spring-boot.version>2.0.2.RELEASE</spring-boot.version>
+        <lombok.version>1.16.12</lombok.version>
     </properties>
 
     <dependencies>
@@ -28,6 +34,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -39,39 +46,59 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-            <version>3.4.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>3.5.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <version>${aliyun.java.sdk.core.version}</version>
         </dependency>
 
         <!--==== 二方库 ====-->
         <!-- nls-dialog-sdk -->
         <dependency>
-            <groupId>com.alibaba.idst</groupId>
+            <groupId>com.alibaba.nls</groupId>
             <artifactId>nls-dialog-sdk</artifactId>
-            <version>1.0.0</version>
+            <version>${sdm.dialog.sdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.60</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpcomponents.httpclient.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
         </dependency>
     </dependencies>
 

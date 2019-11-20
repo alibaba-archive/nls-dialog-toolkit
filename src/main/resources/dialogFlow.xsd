@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+    <xs:simpleType name="NotEmptyStr">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="FuncName">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9_.]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="NlgItems">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="ITEM" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Nlg">
+        <xs:all>
+            <xs:element name="KEY" type="Condition"/>
+            <xs:element name="VALUE" type="NlgItems"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Func">
+        <xs:sequence>
+            <xs:element name="PARAM" type="xs:string" minOccurs="0"/>
+            <xs:element name="NLG" type="Nlg" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="FuncName" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="FuncList">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="FUNC" type="Func" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ConditionGroupDef">
+        <xs:sequence>
+            <!--
+                prohibit empty body, see documentation in run.sh
+            -->
+            <xs:choice>
+                <xs:element name="AND" type="Condition"/>
+                <xs:element name="OR" type="Condition"/>
+                <xs:element name="NOT" type="Condition"/>
+                <xs:element name="FUNC" type="Func"/>
+            </xs:choice>
+            <xs:element name="AND" type="Condition" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="OR" type="Condition" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NOT" type="Condition" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FUNC" type="Func" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="NotEmptyStr" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ConditionGroupRef">
+        <xs:attribute name="ref" type="NotEmptyStr" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="Condition">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="CONDITION_GROUP" type="ConditionGroupRef" minOccurs="0"/>
+            <xs:element name="AND" type="Condition" maxOccurs="unbounded"/>
+            <xs:element name="OR" type="Condition" maxOccurs="unbounded"/>
+            <xs:element name="NOT" type="Condition" maxOccurs="unbounded" />
+            <xs:element name="FUNC" type="Func" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attribute name="id" use="optional" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="LogicIf">
+        <xs:sequence>
+            <xs:element name="CONDITION" type="Condition"/>
+            <xs:element name="THEN" type="Action"/>
+            <xs:element name="ELSE" type="Action" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType  name="LogicCase">
+        <xs:complexContent>
+            <xs:extension base="FuncList">
+                <xs:attribute name="val" type="NotEmptyStr" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="LogicSwitch">
+        <xs:sequence>
+            <xs:element name="CASE" type="LogicCase" maxOccurs="unbounded"/>
+            <xs:element name="DEFAULT" minOccurs="0" type="FuncList"/>
+        </xs:sequence>
+        <xs:attribute name="check_item" type="NotEmptyStr" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="Action">
+        <xs:sequence>
+            <xs:element name="FUNC" type="Func" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="IF" type="LogicIf" minOccurs="0"/>
+            <xs:element name="SWITCH" type="LogicSwitch" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" use="optional" type="xs:string"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="State">
+        <xs:sequence>
+            <xs:element name="ENTER_CONDITION" type="Condition"/>
+            <xs:element name="ACTION" type="Action"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required" type="NotEmptyStr"/>
+    </xs:complexType>
+
+    <xs:complexType name="NlgModule">
+        <xs:sequence>
+            <xs:element name="CONDITION" type="Condition" minOccurs="0"/>
+            <xs:element name="VALUE" type="NlgItems"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required" type="NotEmptyStr"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="NlgModuleList">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="NLG_MODULE" type="NlgModule" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="App">
+        <xs:sequence>
+            <xs:element name="NLG_MODULE_LIST" type="NlgModuleList" minOccurs="0"/>
+            <xs:element name="CONDITION_GROUP" type="ConditionGroupDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="STATE" type="State" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="NotEmptyStr" use="required"/>
+        <xs:attribute name="domain" type="NotEmptyStr"/>
+    </xs:complexType>
+
+
+    <xs:element name="APP" type="App">
+        <!--<xs:unique name="uniqStateName">-->
+        <!--<xs:selector xpath="./STATE"/>-->
+        <!--<xs:field xpath="@name"/>-->
+        <!--</xs:unique>-->
+        <xs:key name="ConditionGroupNameKey">
+            <xs:selector xpath="./CONDITION_GROUP"/>
+            <xs:field xpath="@name"/>
+        </xs:key>
+        <xs:keyref name="ConditionGroupNameRef" refer="ConditionGroupNameKey">
+            <xs:selector xpath=".//CONDITION_GROUP"/>
+            <xs:field xpath="@ref"/>
+        </xs:keyref>
+    </xs:element>
+</xs:schema>

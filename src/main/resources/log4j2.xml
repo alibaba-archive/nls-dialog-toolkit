@@ -1,13 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+    <Properties>
+        <Property name="baseDir">logs</Property>
+        <Property name="logName">sdm</Property>
+        <Property name="springLogName">sdm-spring</Property>
+        <Property name="traceLogName">sdm-access</Property>
+        <Property name="ageLogName">sdm-age</Property>
+        <Property name="accessLogName">access</Property>
+        <Property name="fnAccessLogName">fn-access</Property>
+        <Property name="EX">%xwEx</Property>
+        <Property name="TRACE_PATTERN">%m%n</Property>
+        <Property name="AGE_PATTERN">%m%n</Property>
+        <Property name="ACCESS_PATTERN">%m%n</Property>
+        <Property name="STD_PATTERN">%clr{%date{MM-dd HH:mm:ss.SSS}}{faint} %clr{%level} %clr{[%thread]}{magenta} %clr{%class{10}:}{cyan}%message%n</Property>
+        <Property name="STD_PTN">%date{yyyy-MM-dd HH:mm:ss.SSS} %5level [%thread] %l %X{REQUEST_ID} - %message%n</Property>
+        <Property name="SPRING_PTN">%date{yyyy-MM-dd HH:mm:ss.SSS} %5level [%thread] %logger{10} - %message%n</Property>
+        <!-- 过往日志格式为: {logName}.log.{保存日期} -->
+        <Property name="backupLog">${baseDir}/${logName}.log.%d{yyyy-MM-dd}.%i</Property>
+        <Property name="backupSpringLog">${baseDir}/${springLogName}.log.%d{yyyy-MM-dd}.%i</Property>
+        <Property name="backupTraceLog">${baseDir}/${traceLogName}.log.%d{yyyy-MM-dd}.%i</Property>
+        <Property name="backupAgeLog">${baseDir}/${ageLogName}.log.%d{yyyy-MM-dd}.%i</Property>
+        <Property name="backupAccessLog">${baseDir}/${accessLogName}.log.%d{yyyy-MM-dd}.%i</Property>
+        <Property name="backupFnAccessLog">${baseDir}/${fnAccessLogName}.log.%d{yyyy-MM-dd}.%i</Property>
+        <!-- 日志文件推荐至少保存5天 -->
+        <Property name="retentionDay">5d</Property>
+        <Property name="buffer">81920</Property>
+    </Properties>
+
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        <Console name="STDOUT" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${STD_PATTERN}"/>
         </Console>
+
+        <RollingFile name="STANDARD_FILE" fileName="${baseDir}/${logName}.log" filePattern="${backupLog}" bufferSize="${buffer}">
+            <PatternLayout>
+                <Pattern>${STD_PTN}</Pattern>
+            </PatternLayout>
+            <!-- The triggering policy determines if a rollover should be performed
+            while the RolloverStrategy defines how the rollover should be done-->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 GB"/>
+            </Policies>
+            <!-- The maximum number of files to keep -->
+            <DefaultRolloverStrategy max="15">
+                <Delete basePath="${baseDir}">
+                    <IfFileName glob="${logName}.log.*"/>
+                    <IfLastModified age="${retentionDay}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="SPRING_FILE" fileName="${baseDir}/${springLogName}.log" filePattern="${backupSpringLog}" bufferSize="${buffer}">
+            <PatternLayout>
+                <Pattern>${SPRING_PTN}</Pattern>
+            </PatternLayout>
+            <!-- The triggering policy determines if a rollover should be performed
+            while the RolloverStrategy defines how the rollover should be done-->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 GB"/>
+            </Policies>
+            <!-- The maximum number of files to keep -->
+            <DefaultRolloverStrategy max="15">
+                <Delete basePath="${baseDir}">
+                    <IfFileName glob="${springLogName}.log.*"/>
+                    <IfLastModified age="${retentionDay}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="TRACE_FILE" fileName="${baseDir}/${traceLogName}.log" filePattern="${backupTraceLog}" bufferSize="${buffer}">
+            <PatternLayout>
+                <Pattern>${TRACE_PATTERN}</Pattern>
+            </PatternLayout>
+            <!-- The triggering policy determines if a rollover should be performed
+            while the RolloverStrategy defines how the rollover should be done-->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 GB"/>
+            </Policies>
+            <!-- The maximum number of files to keep -->
+            <DefaultRolloverStrategy max="15">
+                <Delete basePath="${baseDir}">
+                    <IfFileName glob="${traceLogName}.log.*"/>
+                    <IfLastModified age="${retentionDay}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="AGE_FILE" fileName="${baseDir}/${ageLogName}.log" filePattern="${backupAgeLog}" bufferSize="${buffer}">
+            <PatternLayout>
+                <Pattern>${AGE_PATTERN}</Pattern>
+            </PatternLayout>
+            <!-- The triggering policy determines if a rollover should be performed
+            while the RolloverStrategy defines how the rollover should be done-->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 GB"/>
+            </Policies>
+            <!-- The maximum number of files to keep -->
+            <DefaultRolloverStrategy max="15">
+                <Delete basePath="${baseDir}">
+                    <IfFileName glob="${ageLogName}.log.*"/>
+                    <IfLastModified age="${retentionDay}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="ACCESS_FILE" fileName="${baseDir}/${accessLogName}.log" filePattern="${backupAccessLog}" bufferSize="${buffer}">
+            <PatternLayout>
+                <Pattern>${ACCESS_PATTERN}</Pattern>
+            </PatternLayout>
+            <!-- The triggering policy determines if a rollover should be performed
+            while the RolloverStrategy defines how the rollover should be done-->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 GB"/>
+            </Policies>
+            <!-- The maximum number of files to keep -->
+            <DefaultRolloverStrategy max="15">
+                <Delete basePath="${baseDir}">
+                    <IfFileName glob="${accessLogName}.log.*"/>
+                    <IfLastModified age="${retentionDay}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="FN_ACCESS_FILE" fileName="${baseDir}/${fnAccessLogName}.log" filePattern="${backupFnAccessLog}" bufferSize="${buffer}">
+            <PatternLayout>
+                <Pattern>${ACCESS_PATTERN}</Pattern>
+            </PatternLayout>
+            <!-- The triggering policy determines if a rollover should be performed
+            while the RolloverStrategy defines how the rollover should be done-->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="2 GB"/>
+            </Policies>
+            <!-- The maximum number of files to keep -->
+            <DefaultRolloverStrategy max="15">
+                <Delete basePath="${baseDir}">
+                    <IfFileName glob="${fnAccessLogName}.log.*"/>
+                    <IfLastModified age="${retentionDay}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
     </Appenders>
+
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
-        </Root>
+        <Root level="DEBUG" additivity="false"/>
+        <Logger name="com.alibaba.idst.nls" additivity="false">
+            <AppenderRef level="DEBUG" ref="STDOUT"/>
+            <AppenderRef level="DEBUG" ref="STANDARD_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.hsfservice" level="DEBUG" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef level="DEBUG" ref="STANDARD_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.dm" level="DEBUG" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef level="DEBUG" ref="STANDARD_FILE"/>
+        </Logger>
+        <Logger name="org.springframework" additivity="false">
+            <Level value="DEBUG"/>
+            <AppenderRef level="WARN" ref="STDOUT"/>
+            <AppenderRef level="WARN" ref="SPRING_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.sdm.TraceLogger" level="DEBUG" additivity="false">
+            <AppenderRef ref="TRACE_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.sdm.AgeLogger" level="DEBUG" additivity="false">
+            <AppenderRef ref="AGE_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.sdm.AccessLogger" level="DEBUG" additivity="false">
+            <AppenderRef ref="ACCESS_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.sdm.FnAccessLogger" level="DEBUG" additivity="false">
+            <AppenderRef ref="FN_ACCESS_FILE"/>
+        </Logger>
+        <Logger name="com.alibaba.idst.nls.base" level="OFF" additivity="false"/>
+        <Logger name="com.alibaba.idst.nls.discovery" level="OFF" additivity="false"/>
     </Loggers>
 </Configuration>
